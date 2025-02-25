@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Seat Selection | BusBooker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #d84e55;
+            --primary-dark: #c13b42;
+        }
+
+        .bus-layout {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .seats {
+            display: grid;
+            grid-template-columns: repeat(4, 50px);
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .seat {
+            width: 50px;
+            height: 50px;
+            background-color: #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .seat.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .seat.occupied {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-red-600 p-4 text-white text-center font-bold text-2xl">
+        BusBooker - Select Your Seat
+    </nav>
+
+    <!-- Seat Selection Section -->
+    <div class="container mx-auto p-6">
+        <h2 class="text-2xl font-bold text-center mb-4">Select Your Seats</h2>
+        <div class="bus-layout">
+            <div class="seats">
+                <!-- Seats will be generated here dynamically -->
+            </div>
+        </div>
+
+        <!-- Selected Seats & Total Price -->
+        <div class="mt-6 text-center">
+            <p class="text-lg font-bold">Selected Seats: <span id="selected-seats">None</span></p>
+            <p class="text-lg font-bold mt-2">Total Price: $<span id="total-price">0</span></p>
+        </div>
+    </div>
+
+    <!-- Passenger Details Form -->
+    <div class="container mx-auto p-6 bg-white shadow-lg rounded-lg mt-6 max-w-2xl hidden" id="passenger-form">
+        <h2 class="text-xl font-bold mb-4 text-center text-red-600">Enter Passenger Details</h2>
+        <form id="passengerDetailsForm">
+            <div id="passenger-details-container"></div>
+            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg w-full mt-4" 
+        onclick="window.location.href='payment.html'">
+    Proceed to Payment
+</button>
+
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const seatContainer = document.querySelector(".seats");
+            const selectedSeatsDisplay = document.getElementById("selected-seats");
+            const totalPriceDisplay = document.getElementById("total-price");
+            const passengerForm = document.getElementById("passenger-form");
+            const passengerDetailsContainer = document.getElementById("passenger-details-container");
+
+            const seatPrice = 20; // Price per seat
+            let selectedSeats = [];
+
+            // Create 40 seats dynamically
+            for (let i = 1; i <= 40; i++) {
+                const seat = document.createElement("div");
+                seat.classList.add("seat");
+                seat.textContent = i;
+                seat.dataset.seatNumber = i;
+
+                // Randomly mark some seats as occupied
+                if (Math.random() < 0.2) {
+                    seat.classList.add("occupied");
+                }
+
+                seat.addEventListener("click", function () {
+                    if (!seat.classList.contains("occupied")) {
+                        seat.classList.toggle("selected");
+
+                        const seatNumber = seat.dataset.seatNumber;
+                        if (seat.classList.contains("selected")) {
+                            selectedSeats.push(seatNumber);
+                        } else {
+                            selectedSeats = selectedSeats.filter(num => num !== seatNumber);
+                        }
+
+                        updateSelection();
+                    }
+                });
+
+                seatContainer.appendChild(seat);
+            }
+
+            function updateSelection() {
+                if (selectedSeats.length > 0) {
+                    selectedSeatsDisplay.textContent = selectedSeats.join(", ");
+                    totalPriceDisplay.textContent = selectedSeats.length * seatPrice;
+                    passengerForm.classList.remove("hidden");
+                } else {
+                    selectedSeatsDisplay.textContent = "None";
+                    totalPriceDisplay.textContent = "0";
+                    passengerForm.classList.add("hidden");
+                }
+
+                updatePassengerDetailsForm();
+            }
+
+            function updatePassengerDetailsForm() {
+                passengerDetailsContainer.innerHTML = "";
+                selectedSeats.forEach((seat, index) => {
+                    const passengerField = `
+                        <div class="mb-4">
+                            <label class="block text-gray-700">Passenger ${index + 1} (Seat ${seat})</label>
+                            <input type="text" name="passenger${index + 1}" class="w-full p-2 border rounded-lg" placeholder="Enter Name" required>
+                        </div>
+                    `;
+                    passengerDetailsContainer.innerHTML += passengerField;
+                });
+            }
+
+            document.getElementById("passengerDetailsForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+                alert("Proceeding to payment...");
+            });
+        });
+    </script>
+
+</body>
+</html>

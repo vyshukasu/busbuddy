@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Success | BusBooker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-md">
+        <h2 class="text-2xl font-bold text-green-600">Payment Successful!</h2>
+        <p class="text-gray-700 mt-2">Thank you for booking your ticket with BusBooker.</p>
+        
+        <h3 class="text-lg font-bold mt-4">Booking Details</h3>
+        <p><strong>Name:</strong> <span id="name"></span></p>
+        <p><strong>Phone:</strong> <span id="phone"></span></p>
+        <p><strong>Seats Booked:</strong> <span id="seats"></span></p>
+        <p><strong>Total Amount Paid:</strong> $<span id="total-amount"></span></p>
+
+        <button onclick="window.location.href='home.html'" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg mt-4">Go to Home</button>
+    </div>
+
+    <script>
+        document.getElementById("name").textContent = localStorage.getItem("name");
+        document.getElementById("phone").textContent = localStorage.getItem("phone");
+        document.getElementById("seats").textContent = localStorage.getItem("seats");
+        document.getElementById("total-amount").textContent = localStorage.getItem("totalPrice");
+    </script>
+
+</body>
+</html>

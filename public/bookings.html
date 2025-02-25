@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BusBooker - Bus Search Results & Booking</title>
+    <style>
+        :root {
+            --primary: #d84e55;
+            --secondary: #f15a24;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #eee;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .logo span {
+            color: var(--secondary);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        /* Search Recap */
+        .search-recap {
+            background-color: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .journey-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .journey-route {
+            margin-right: 20px;
+        }
+        
+        .journey-route h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .journey-date {
+            padding-left: 20px;
+            border-left: 1px solid #ddd;
+        }
+        
+        .modify-search {
+            background-color: var(--light);
+            color: var(--dark);
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .filter-title {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .filter-option {
+            padding: 8px 15px;
+            background-color: var(--light);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border: 1px solid #ddd;
+        }
+        
+        .filter-option.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Bus List */
+        .bus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .bus-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .bus-card.expanded {
+            border: 2px solid var(--primary);
+        }
+        
+        .bus-summary {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .bus-info {
+            flex: 2;
+        }
+        
+        .bus-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .bus-type {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: var(--light);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .bus-rating {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: var(--success);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .bus-amenities {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .bus-timing {
+            flex: 1;
+            text-align: center;
+            border-left: 1px dashed #ddd;
+            border-right: 1px dashed #ddd;
+            padding: 0 15px;
+        }
+        
+        .departure-time, .arrival-time {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .journey-duration {
+            padding: 5px 10px;
+            background-color: var(--light);
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .bus-price {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .seat-status {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .available {
+            color: var(--success);
+        }
+        
+        .limited {
+            color: var(--warning);
+        }
+        
+        .price-amount {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .view-seats {
+            display: inline-block;
+            padding: 8px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        /* Bus Details & Seat Selection */
+        .bus-details {
+            border-top: 1px solid #ddd;
+            padding: 20px;
+            display: none;
+        }
+        
+        .bus-card.expanded .bus-details {
+            display: block;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Seat Layout */
+        .seat-layout-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .layout {
+            flex: 3;
+        }
+        
+        .seat-map {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .bus-front {
+            height: 40px;
+            background-color: #ddd;
+            border-radius: 20px 20px 0 0;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .seats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .seat {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .seat.available {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .seat.selected {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .seat.booked {
+            background-color: #ddd;
+            border-color: #ccc;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .seat-legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+        
+        .color-available {
+            border: 2px solid var(--success);
+            background-color: white;
+        }
+        
+        .color-selected {
+            background-color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .color-booked {
+            background-color: #ddd;
+            border: 2px solid #ccc;
+        }
+        
+        .seat-selection-details {
+            flex: 2;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .selected-seats-info {
+            margin-bottom: 20px;
+        }
+        
+        .selected-seat-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .selected-seat-tag {
+            background-color: var(--light);
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .remove-seat {
+            margin-left: 5px;
+            cursor: pointer;
+            color: var(--danger);
+        }
+        
+        .fare-breakup {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .fare-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .fare-total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-top: 1px dashed #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        .continue-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        /* Passenger Details Form */
+        .passenger-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .form-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .passenger-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .contact-details {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .pickup-point-selection {
+            margin-top: 20px;
+        }
+        
+        .pickup-points {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .pickup-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pickup-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(216, 78, 85, 0.05);
+        }
+        
+        .pickup-option input {
+            margin-right: 10px;
+        }
+        
+        .pickup-details {
+            flex: 1;
+        }
+        
+        .pickup-time {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .pickup-address {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Payment Section */
+        .payment-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .payment-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .payment-method {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .payment-method.selected {
+            border-color: var(--primary);
+            background-color: rgba(216, 78, 85, 0.05);
+        }
+        
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+        
+        .card-form {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .card-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .card-number {
+            flex: 3;
+        }
+        
+        .card-expiry {
+            flex: 1;
+        }
+        
+        .card-cvv {
+            flex: 1;
+        }
+        
+        .pay-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        /* Booking Confirmation */
+        .booking-confirmed {
+            display: none;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            background-color: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+        
+        .booking-id {
+            background-color: var(--light);
+            padding: 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .booking-details {
+            margin-top: 30px;
+            text-align: left;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            flex: 1;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .detail-value {
+            flex: 2;
+            font-weight: 500;
+        }
+        
+        .view-ticket-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            transform: translateX(150%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast-icon {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+        
+        /* Progress Tracker */
+        .progress-tracker {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .progress-tracker::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #ddd;
+            z-index: 1;
+        }
+        
+        .progress-step {
+            position: relative;
+            z-index: 2;
+            background-color: #f5f5f5;
+            padding: 0 10px;
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            color: #999;
+        }
+        
+        .step-title {
+            font-weight: 500;
+            color: #999;
+        }
+        
+        .progress-step.active .step-number {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .progress-step.active .step-titlHe {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .progress-step.completed .step-number {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .journey-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .journey-date {
+                border-left: none;
+                padding-left: 0;
+                margin-top: 10px;
+            }
+            
+            .bus-summary {
+                flex-direction: column;
+            }
+            
+            .bus-info, .bus-timing, .bus-price {
+                width: 100%;
+                text-align: left;
+                padding: 10px 0;
+                border: none;
+            }
+            
+            .bus-timing {
+                border-top: 1px dashed #ddd;
+                border-bottom: 1px dashed #ddd;
+                margin: 10px 0;
+            }
+            
+            .seat-layout-container {
+                flex-direction: column;
+            }
+            
+            .seats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .seat {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .passenger-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .progress-tracker::before {
+                top: 15px;
+            }
+            
+            .step-number {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+            
+            .step-title {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">Bus<span>Booker</span></div>
+            <div class="user-profile">
+                <div class="user-avatar">JS</div>
+                <div class="user-name">John Smith</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Progress Tracker -->
+        <div class="progress-tracker">
+            <div class="progress-step active" id="step1">
+                <div class="step-number">1</div>
+                <div class="step-title">Select Bus</div>
+            </div>
+            <div class="progress-step" id="step2">
+                <div class="step-number">2</div>
+                <div class="step-title">Select Seats</div>
+            </div>
+            <div class="progress-step" id="step3">
+                <div class="step-number">3</div>
+                <div class="step-title">Passenger Details</div>
+            </div>
+            <div class="progress-step" id="step4">
+                <div class="step-number">4</div>
+                <div class="step-title">Payment</div>
+            </div>
+        </div>
+        
+        <!-- Search Recap Section -->
+        <div class="search-recap">
+            <div class="journey-info">
+                <div class="journey-route">
+                    <h3>Delhi to Mumbai</h3>
+                    <p>Monday, 24 Feb, 2025</p>
+                </div>
+                <div class="journey-date">
+                    <p>14 buses found</p>
+                </div>
+            </div>
+            <button class="modify-search">Modify Search</button>
+        </div>
+        
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h3 class="filter-title">Filter Buses</h3>
+            <div class="filter-options">
+                <div class="filter-option active">All</div>
+                <div class="filter-option">AC</div>
+                <div class="filter-option">Non-AC</div>
+                <div class="filter-option">Sleeper</div>
+                <div class="filter-option">Seater</div>
+                <div class="filter-option">Morning Departure</div>
+                <div class="filter-option">Night Departure</div>
+            </div>
+        </div>
+        
+        <!-- Bus List -->
+        <div class="bus-list" id="busList">
+            <!-- Bus Card 1 -->
+            <div class="bus-card" id="bus1">
+                <div class="bus-summary" onclick="toggleBusDetails('bus1')">
+                    <div class="bus-info">
+                        <div class="bus-name">Delhi Travels Express</div>
+                        <span class="bus-type">AC Sleeper</span>
+                        <span class="bus-rating">4.5 ★</span>
+                        <div class="bus-amenities">
+                            <span>WiFi</span> • 
+                            <span>Charging Point</span> • 
+                            <span>Blanket</span> • 
+                            <span>Water Bottle</span>
+                        </div>
+                    </div>
+                    <div class="bus-timing">
+                        <div class="departure-time">21:00</div>
+                        <div class="journey-duration">12h 30m</div>
+                        <div class="arrival-time">09:30</div>
+                    </div>
+                    <div class="bus-price">
+                        <div class="seat-status available">36 seats available</div>
+                        <div class="price-amount">₹1,299</div>
+                        <button class="view-seats" onclick="(function(event) {
+                            event.stopPropagation(); 
+                            window.location.href = 'seatanddetails.html?busId=bus1';
+                        })(event)">VIEW SEATS</button>
+                    </div>
+                </div>
+                <div class="bus-details">
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab('bus1-seats')">Seat Selection</div>
+                        <div class="tab" onclick="switchTab('bus1-reviews')">Reviews</div>
+                        <div class="tab" onclick="switchTab('bus1-policies')">Policies</div>
+                    </div>
+                    <div class="tab-content active" id="bus1-seats">
+                        <div class="seat-layout-container">
+                            <div class="layout">
+                                <div class="seat-map">
+                                    <div class="bus-front">Bus Front</div>
+                                    <div class="seats" id="seatMap">
+                                        <!-- Lower Deck -->
+                                        <div class="seat available" data-seat="L1" onclick="selectSeat(this)">L1</div>
+                                        <div class="seat available" data-seat="L2" onclick="selectSeat(this)">L2</div>
+                                        <div class="seat" style="visibility: hidden;"></div>
+                                        <div class="seat available" data-seat="L3" onclick="selectSeat(this)">L3</div>
+                                        <div class="seat available" data-seat="L4" onclick="selectSeat(this)">L4</div>
+                                        
+                                        <div class="seat available" data-seat="L5" onclick="selectSeat(this)">L5</div>
+                                        <div class="seat available" data-seat="L6" onclick="selectSeat(this)">L6</div>
+                                        <div class="seat" style="visibility: hidden;"></div>
+                                        <div class="seat available" data-seat="L7" onclick="selectSeat(this)">L7</div>
+                                        <div class="seat booked">L8</div>
+                                        
+                                        <div class="seat available" data-seat="L9" onclick="selectSeat(this)">L9</div>
+                                        <div class="seat available" data-seat="L10" onclick="selectSeat(this)">L10</div>
+                                        <div class="seat" style="visibility: hidden;"></div>
+                                        <div class="seat booked">L11</div>
+                                        <div class="seat booked">L12</div>
+                                        
+                                        <div class="seat available" data-seat="L13" onclick="selectSeat(this)">L13</div>
+                                        <div class="seat available" data-seat="L14" onclick="selectSeat(this)">L14</div>
+                                        <div class="seat" style="visibility: hidden;"></div>
+                                        <div class="seat available" data-seat="L15" onclick="selectSeat(this)">L15</div>
+                                        <div class="seat available" data-seat="L16" onclick="selectSeat(this)">L16</div>
+                                        
+                                        <div class="seat available" data-seat="L17" onclick="selectSeat(this)">L17</div>
+                                        <div class="seat available" data-seat="L18" onclick="selectSeat(this)">L18</div>
+                                        <div class="seat" style="visibility: hidden;"></div>
+                                        <div class="seat booked">L19</div>
+                                        <div class="seat booked">L20</div>
+                                        
+                                        <div class="seat available" data-seat="L21" onclick="selectSeat(this)">L21</div>
+                                        <div class="seat available" data-seat="L22" onclick="selectSeat(this)">L22</div>
+                                        <div class="seat" style="visibility: hidden
+                                        

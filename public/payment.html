@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment | BusBooker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #d84e55;
+            --primary-dark: #c13b42;
+        }
+        
+        .payment-container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .payment-option:hover {
+            background: #f3f3f3;
+        }
+
+        .payment-option input {
+            margin-right: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-red-600 p-4 text-white text-center font-bold text-2xl">
+        BusBooker - Secure Payment
+    </nav>
+
+    <!-- Payment Form -->
+    <div class="container mx-auto p-6">
+        <div class="payment-container">
+            <h2 class="text-2xl font-bold text-center mb-4 text-red-600">Complete Your Payment</h2>
+
+            <p class="text-lg font-bold text-center">Total Amount: $<span id="total-amount">0</span></p>
+
+            <h3 class="text-lg font-bold mt-4">Passenger Details</h3>
+            <input type="text" id="name" class="w-full p-2 border rounded-lg mt-2" placeholder="Full Name" required>
+            <input type="text" id="phone" class="w-full p-2 border rounded-lg mt-2" placeholder="Phone Number" required>
+            <input type="number" id="seats" class="w-full p-2 border rounded-lg mt-2" placeholder="No. of Seats" required>
+
+            <h3 class="text-lg font-bold mt-4">Choose Payment Method</h3>
+
+            <!-- Payment Methods -->
+            <div class="mt-2">
+                <label class="payment-option">
+                    <input type="radio" name="payment-method" value="card" checked>
+                    Credit/Debit Card
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment-method" value="upi">
+                    UPI (Google Pay, PhonePe, Paytm)
+                </label>
+            </div>
+
+            <!-- Card Payment Form -->
+            <div id="card-form">
+                <h3 class="text-lg font-bold mt-4">Enter Card Details</h3>
+                <input type="text" class="w-full p-2 border rounded-lg mt-2" placeholder="Card Number" required>
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <input type="text" class="p-2 border rounded-lg" placeholder="MM/YY" required>
+                    <input type="text" class="p-2 border rounded-lg" placeholder="CVV" required>
+                </div>
+                <input type="text" class="w-full p-2 border rounded-lg mt-2" placeholder="Cardholder Name" required>
+            </div>
+
+            <!-- UPI Payment Form -->
+            <div id="upi-form" class="hidden">
+                <h3 class="text-lg font-bold mt-4">Enter UPI ID</h3>
+                <input type="text" class="w-full p-2 border rounded-lg mt-2" placeholder="yourname@upi" required>
+            </div>
+
+            <!-- Pay Button -->
+            <button id="pay-button" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg w-full mt-4"
+                    onclick="window.location.href='sucess.html'">
+                     Pay Now
+            </button>
+
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Retrieve total price from localStorage (set in seat selection page)
+            const totalPrice = localStorage.getItem("totalPrice") || 0;
+            document.getElementById("total-amount").textContent = totalPrice;
+
+            const paymentMethods = document.getElementsByName("payment-method");
+            const cardForm = document.getElementById("card-form");
+            const upiForm = document.getElementById("upi-form");
+
+            // Handle payment method change
+            paymentMethods.forEach(method => {
+                method.addEventListener("change", function () {
+                    if (this.value === "card") {
+                        cardForm.classList.remove("hidden");
+                        upiForm.classList.add("hidden");
+                    } else {
+                        cardForm.classList.add("hidden");
+                        upiForm.classList.remove("hidden");
+                    }
+                });
+            });
+
+            // Handle payment submission
+            document.getElementById("pay-button").addEventListener("click", function () {
+                const name = document.getElementById("name").value;
+                const phone = document.getElementById("phone").value;
+                const seats = document.getElementById("seats").value;
+
+                if (!name || !phone || !seats) {
+                    alert("Please fill in all passenger details.");
+                    return;
+                }
+
+                // Store user details in localStorage
+                localStorage.setItem("name", name);
+                localStorage.setItem("phone", phone);
+                localStorage.setItem("seats", seats);
+
+                // Redirect to success page
+                window.location.href = "success.html";
+            });
+        });
+    </script>
+
+</body>
+</html>

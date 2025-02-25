@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TravelBus - Book Bus Tickets Online</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    /* Header Styles */
+    .header {
+      background-color: #d84e55;
+      padding: 15px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      text-decoration: none;
+    }
+    
+    .logo span {
+      color: #ffde59;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+    
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .auth-buttons button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .login-btn {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white !important;
+    }
+    
+    .login-btn:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+    
+    .register-btn {
+      background-color: #ffde59;
+      color: #d84e55;
+    }
+    
+    .register-btn:hover {
+      background-color: #ffd326;
+    }
+    
+    /* Main Search Section */
+    .hero-section {
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/api/placeholder/1200/500') center/cover no-repeat;
+      padding: 60px 20px;
+      text-align: center;
+      color: white;
+    }
+    
+    .hero-content {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .hero-content h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    
+    .hero-content p {
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+    
+    .search-box {
+      background-color: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .search-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+    
+    .form-group label {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    
+    .form-group input, .form-group select {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 15px;
+    }
+    
+    .search-btn {
+      background-color: #d84e55;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      grid-column: span 1;
+      margin-top: 24px;
+    }
+    
+    .search-btn:hover {
+      background-color: #c8343b;
+    }
+    
+    /* Offers Section */
+    .offers-section {
+      padding: 50px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 30px;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background-color: #d84e55;
+    }
+    
+    .offers-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    
+    .offer-card {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    
+    .offer-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .offer-img {
+      height: 150px;
+      background-color: #eee;
+    }
+    
+    .offer-content {
+      padding: 15px;
+    }
+    
+    .offer-title {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #d84e55;
+    }
+    
+    .offer-desc {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+    
+    .offer-code {
+      background-color: #f5f5f5;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    /* Popular Routes Section */
+    .routes-section {
+      padding: 50px 20px;
+      background-color: #fff;
+    }
+    
+    .routes-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .routes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    
+    .route-card {
+      border: 1px solid #eee;
+      padding: 15px;
+      border-radius: 6px;
+      transition: all 0.3s;
+    }
+    
+    .route-card:hover {
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-color: #d84e55;
+    }
+    
+    .route-cities {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .route-price {
+      color: #d84e55;
+      font-weight: 600;
+    }
+    
+    .route-time {
+      font-size: 13px;
+      color: #666;
+    }
+    
+    /* About Section */
+    .about-section {
+      padding: 50px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .about-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      align-items: center;
+    }
+    
+    .about-text h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    .about-text p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+      color: #555;
+    }
+    
+    .about-image {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* FAQ Section */
+    .faq-section {
+      padding: 50px 20px;
+      background-color: #f9f9f9;
+    }
+    
+    .faq-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .accordion {
+      margin-top: 30px;
+    }
+    
+    .accordion-item {
+      background-color: white;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    
+    .accordion-header {
+      padding: 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      transition: background-color 0.3s;
+    }
+    
+    .accordion-header:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .accordion-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .accordion-icon {
+      transition: transform 0.3s;
+    }
+    
+    .accordion-content {
+      padding: 0 15px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    
+    .accordion-content p {
+      padding: 15px 0;
+      line-height: 1.6;
+      color: #666;
+    }
+    
+    .accordion-item.active .accordion-icon {
+      transform: rotate(180deg);
+    }
+    
+    .accordion-item.active .accordion-content {
+      max-height: 200px;
+    }
+    
+    /* Footer */
+    .footer {
+      background-color: #333;
+      color: #fff;
+      padding: 50px 20px 20px;
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+    }
+    
+    .footer-section h3 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .footer-section h3::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background-color: #d84e55;
+    }
+    
+    .footer-section ul {
+      list-style: none;
+    }
+    
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-section ul li a {
+      color: #bbb;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-section ul li a:hover {
+      color: #fff;
+    }
+    
+    .download-apps {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .app-badge {
+      background-color: #444;
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: white;
+      font-size: 14px;
+    }
+    
+    .copyright {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #444;
+      font-size: 14px;
+      color: #bbb;
+    }
+    
+    /* Help Bot */
+    .help-bot-icon {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background-color: #d84e55;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 999;
+      transition: all 0.3s;
+    }
+    
+    .help-bot-icon:hover {
+      transform: scale(1.1);
+    }
+    
+    .help-bot-container {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 350px;
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+      z-index: 999;
+      display: none;
+      flex-direction: column;
+      height: 400px;
+    }
+    
+    .help-bot-header {
+      background-color: #d84e55;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .help-bot-header h3 {
+      font-size: 18px;
+    }
+    
+    .help-bot-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    
+    .help-bot-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    
+    .bot-message, .user-message {
+      max-width: 80%;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .bot-message {
+      background-color: #f5f5f5;
+      color: #333;
+      align-self: flex-start;
+    }
+    
+    .user-message {
+      background-color: #d84e55;
+      color: white;
+      margin-left: auto;
+      text-align: right;
+    }
+    
+    .help-bot-input {
+      padding: 15px;
+      border-top: 1px solid #eee;
+      display: flex;
+    }
+    
+    .help-bot-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      outline: none;
+    }
+    
+    .help-bot-input button {
+      background-color: #d84e55;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 15px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .about-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .search-form {
+        grid-template-columns: 1fr;
+      }
+      
+      .search-btn {
+        grid-column: 1;
+      }
+      
+      .help-bot-container {
+        width: 300px;
+        bottom: 80px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="nav-container">
+      <a href="#" class="logo">Travel<span>Bus</span></a>
+      
+      <div class="nav-links">
+        <a href="#hero-section">Home</a>
+        <a href="#routes-section">Routes</a>
+        <a href="#offers-section">Offers</a>
+        <a href="#about-section">About Us</a>
+        <a href="#contact-section">Contact</a>
+    </div>
+      
+      <div class="auth-buttons">
+        <button class="login-btn" id="login-btn">Login</button>
+        <button class="register-btn" id="register-btn">Register</button>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Hero Section with Search -->
+  <section id="hero-section" class="hero-section">
+    <div class="hero-content">
+      <h1>Travel with Comfort and Safety</h1>
+      <p>Book bus tickets online with thousands of routes across the country</p>
+      
+      <div class="search-box">
+        <form class="search-form">
+          <div class="form-group">
+            <label for="from">From</label>
+            <input type="text" id="from" placeholder="Departure City">
+          </div>
+          
+          <div class="form-group">
+            <label for="to">To</label>
+            <input type="text" id="to" placeholder="Arrival City">
+          </div>
+          
+          <div class="form-group">
+            <label for="date">Date of Journey</label>
+            <input type="date" id="date">
+          </div>
+          
+          <button type="button" class="search-btn" id="search-btn">Search Buses</button>
+        </form>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Offers & Deals Section -->
+  <section  id="offers-section" class="offers-section">
+    <h2 class="section-title">Offers & Deals</h2>
+    
+    <div class="offers-container">
+      <div class="offer-card">
+        <div class="offer-img">
+          <img src="1.jpeg" alt="First Trip Discount" width="100%" height="100%">        </div>
+        <div class="offer-content">
+          <h3 class="offer-title">First Trip Discount</h3>
+          <p class="offer-desc">Get 15% off on your first trip with TravelBus. Limited time offer!</p>
+          <div class="offer-code">FIRST15</div>
+        </div>
+      </div>
+      
+      <div class="offer-card">
+        <div class="offer-img">
+          <img src="2.jpeg" alt="Weekend Getaway" width="100%" height="100%">
+        </div>  <div class="offer-content">
+          <h3 class="offer-title">Weekend Getaway</h3>
+          <p class="offer-desc">Flat 10% off on weekend travel plans. Book now to avail this offer!</p>
+          <div class="offer-code">WEEKEND10</div>
+        </div>
+      </div>
+      
+      <div class="offer-card">
+        <div class="offer-img">
+          <img src="3.jpeg" alt="Group Booking" width="100%" height="100%">
+        </div>
+        <div class="offer-content">
+          <h3 class="offer-title">Group Booking</h3>
+          <p class="offer-desc">Book for 4 or more people and get 20% off on your total fare.</p>
+          <div class="offer-code">GROUP20</div>
+        </div>
+      </div>
+      
+      <div class="offer-card">
+        <div class="offer-img">
+          <img src="car.jpeg" alt="Senior Citizen" width="100%" height="100%">
+        </div>
+        <div class="offer-content">
+          <h3 class="offer-title">Senior Citizen</h3>
+          <p class="offer-desc">Special 15% discount for senior citizens. Valid ID required at boarding.</p>
+          <div class="offer-code">SENIOR15</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Popular Routes Section -->
+  <section id="routes-section" class="routes-section" >
+    <div class="routes-container">
+      <h2 class="section-title">Popular Routes</h2>
+      
+      <div class="routes-grid">
+        <div class="route-card">
+          <div class="route-cities">Mumbai to Pune</div>
+          <div class="route-price">Starting from ₹350</div>
+          <div class="route-time">Duration: 3h 30m</div>
+        </div>
+        
+        <div class="route-card">
+          <div class="route-cities">Delhi to Jaipur</div>
+          <div class="route-price">Starting from ₹550</div>
+          <div class="route-time">Duration: 5h 45m</div>
+        </div>
+        
+        <div class="route-card">
+          <div class="route-cities">Bangalore to Chennai</div>
+          <div class="route-price">Starting from ₹650</div>
+          <div class="route-time">Duration: 6h 15m</div>
+        </div>
+        
+        <div class="route-card">
+          <div class="route-cities">Hyderabad to Vijayawada</div>
+          <div class="route-price">Starting from ₹450</div>
+          <div class="route-time">Duration: 4h 30m</div>
+        </div>
+        
+        <div class="route-card">
+          <div class="route-cities">Kolkata to Siliguri</div>
+          <div class="route-price">Starting from ₹750</div>
+          <div class="route-time">Duration: 10h 00m</div>
+        </div>
+        
+        <div class="route-card">
+          <div class="route-cities">Ahmedabad to Surat</div>
+          <div class="route-price">Starting from ₹400</div>
+          <div class="route-time">Duration: 3h 15m</div>
+        </div>
+        
+        <div class="route-card">
+          <div class="route-cities">Goa to Mumbai</div>
+          <div class="route-price">Starting from ₹850</div>
+          <div class="route-time">Duration: 8h 30m</div>
+        </div>
+        
+        <div class="route-card">
+          <div class="route-cities">Chandigarh to Delhi</div>
+          <div class="route-price">Starting from ₹500</div>
+          <div class="route-time">Duration: 4h 45m</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- About Section -->
+  <section  id="about-section" class="about-section">
+    <h2 class="section-title">About TravelBus</h2>
+    
+    <div class="about-content">
+      <div class="about-text">
+        <h2>Your Trusted Travel Partner</h2>
+        <p>TravelBus is India's leading online bus ticketing platform that has transformed the way millions of Indians travel. With our website and mobile app, you can book bus tickets for any route across the country with just a few clicks.</p>
+        <p>Founded in 2013, we have revolutionized bus travel by bringing the entire process online, from selecting routes to making payments. We work with over 2,000 bus operators, covering more than 100,000 routes, and service nearly 20 million customers.</p>
+        <p>Our mission is to make travel accessible, affordable and convenient for everyone. We leverage technology to provide a seamless booking experience, along with features like live tracking, rating & reviews, and 24/7 customer support.</p>
+      </div>
+      
+      <div class="about-image">
+        <img src="4.jpeg" alt="About TravelBus" width="100%">
+      </div>
+    </div>
+  </section>
+  
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="faq-container">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <h3>How do I book a bus ticket on TravelBus?</h3>
+            <div class="accordion-icon">▼</div>
+          </div>
+          <div class="accordion-content">
+            <p>Booking a ticket on TravelBus is easy. Simply enter your source, destination, and date of journey in the search box. Select your preferred bus from the list of available options, choose your seat, fill in passenger details, and make the payment. Your ticket will be sent to your email and mobile number.</p>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <h3>Can I cancel my bus ticket? What is the refund policy?</h3>
+            <div class="accordion-icon">▼</div>
+          </div>
+          <div class="accordion-content">
+            <p>Yes, you can cancel your ticket from your account section. The refund amount depends on the time of cancellation and the cancellation policy of the bus operator. Generally, cancellations made 24 hours before departure get a higher refund percentage. The refund is processed within 5-7 business days.</p>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <h3>How can I get a discount on my bus ticket?</h3>
+            <div class="accordion-icon">▼</div>
+          </div>
+          <div class="accordion-content">
+            <p>We regularly offer discount codes and promotions that you can apply during checkout. You can find these on our "Offers & Deals" section. Additionally, we have special discounts for first-time users, group bookings, and senior citizens. You can also earn and redeem loyalty points for additional savings.</p>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <h3>Is it safe to travel during COVID-19?</h3>
+            <div class="accordion-icon">▼</div>
+          </div>
+          <div class="accordion-content">
+            <p>We are working closely with bus operators to ensure all safety protocols are followed. Buses are regularly sanitized, passengers are required to wear masks, and social distancing measures are implemented where possible. We recommend checking the latest safety guidelines before your journey.</p>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <div class="accordion-header">
+            <h3>How can I contact customer support?</h3>
+            <div class="accordion-icon">▼</div>
+          </div>
+          <div class="accordion-content">
+            <p>You can contact our 24/7 customer support team via the help bot on our website, by calling our toll-free number at 1800-123-4567, or by emailing us at support@travelbus.com. We typically respond to all queries within 2 hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>TravelBus</h3>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Info</h3>
+        <ul>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Bus Operators</a></li>
+          <li><a href="#">Bus Routes</a></li>
+          <li><a href="#">Site Map</a></li>
+          <li><a href="#">Offers</a></li>
+        </ul>
+      </div>
+      
+      <div  id="contact-section"class="footer-section">
+        <h3>Global Sites</h3>
+        <ul>
+          <li><a href="#">TravelBus India</a></li>
+          <li><a href="#">TravelBus Singapore</a></li>
+          <li><a href="#">TravelBus Malaysia</a></li>
+          <li><a href="#">TravelBus Indonesia</a></li>
+          <li><a href="#">TravelBus Peru</a></li>
+          <li><a href="#">TravelBus Colombia</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Download Our App</h3>
+        <p>Book tickets on the go with our mobile app</p>
+        <div class="download-apps">
+          <a href="#" class="app-badge">
+            <span>Google Play</span>
+          </a>
+          <a href="#" class="app-badge">
+            <span>App Store</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      &copy; 2025 TravelBus. All Rights Reserved.
+    </div>
+  </footer>
+  
+  <!-- Help Bot Icon -->
+<div class="help-bot-icon" id="help-bot-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: white">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+  </svg>
+</div>
+
+<!-- Help Bot Container -->
+<div class="help-bot-container" id="help-bot-container">
+  <div class="help-bot-header">
+      <h3>TravelBus Assistant</h3>
+      <button class="help-bot-close" id="help-bot-close">&times;</button>
+  </div>
+  
+  <div class="help-bot-messages" id="help-bot-messages">
+      <div class="bot-message">
+          Hello! I'm your TravelBus assistant. How can I help you today?
+      </div>
+  </div>
+  
+  <div class="help-bot-input">
+      <input type="text" id="help-bot-input-field" placeholder="Type your message...">
+      <button id="help-bot-send">Send</button>
+  </div>
+</div>
+<script>
+  document.getElementById("help-bot-icon").addEventListener("click", function () {
+      document.getElementById("help-bot-container").style.display = "flex";
+  });
+  
+  document.getElementById("help-bot-close").addEventListener("click", function () {
+      document.getElementById("help-bot-container").style.display = "none";
+  });
+  
+  document.getElementById("help-bot-send").addEventListener("click", function () {
+      sendMessage();
+  });
+  
+  document.getElementById("help-bot-input-field").addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+          sendMessage();
+      }
+  });
+  
+  function sendMessage() {
+      const inputField = document.getElementById("help-bot-input-field");
+      const messageText = inputField.value.trim();
+      if (messageText === "") return;
+  
+      // Append User Message
+      const messagesContainer = document.getElementById("help-bot-messages");
+      const userMessage = document.createElement("div");
+      userMessage.classList.add("user-message");
+      userMessage.textContent = messageText;
+      messagesContainer.appendChild(userMessage);
+  
+      inputField.value = "";
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+      // Simulate bot response
+      setTimeout(() => {
+          const botMessage = document.createElement("div");
+          botMessage.classList.add("bot-message");
+          botMessage.textContent = getBotResponse(messageText);
+          messagesContainer.appendChild(botMessage);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, 1000);
+  }
+  
+  function getBotResponse(input) {
+      const responses = {
+          "hello": "Hello! How can I assist you today?",
+          "how to book a ticket": "To book a ticket, search for your route and select your seats.",
+          "what is the refund policy": "You can cancel your ticket 24 hours before departure for a refund.",
+          "available buses": "Please use the search option to find available buses.",
+      };
+  
+      return responses[input.toLowerCase()] || "I'm not sure. Please check the FAQ section.";
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector('a[href="#routes-section"]').addEventListener("click", function (e) {
+        e.preventDefault();
+        document.getElementById("routes-section").scrollIntoView({ behavior: "smooth" });
+    });
+});
+  document.getElementById("login-btn").addEventListener("click", function () {
+        window.location.href = "login.html";
+    });
+
+    document.getElementById("register-btn").addEventListener("click", function () {
+        window.location.href = "register.html";
+    });
+    document.getElementById("search-btn").addEventListener("click", function () {
+        window.location.href = "search.html";
+    });
+    
+    
+
+  </script>

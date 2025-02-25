@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Buses - BusBooker</title>
+    <style>
+        :root {
+            --primary-color: #d84e55;
+            --primary-dark: #c13b42;
+            --primary-light: #ffefef;
+            --secondary-color: #3e7dff;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --gray: #e2e2e2;
+            --dark-gray: #666;
+            --white: #fff;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --border-radius: 4px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header styling */
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Search bar styling */
+        .search-container {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 30px 0;
+            color: var(--white);
+        }
+
+        .search-form {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .search-btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Results section */
+        .results-section {
+            padding: 30px 0;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-count {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 15px;
+        }
+
+        .filter-btn {
+            background-color: var(--white);
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Bus cards */
+        .bus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bus-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 20px;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .bus-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .bus-card {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        .bus-info h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .bus-type {
+            display: inline-block;
+            background-color: var(--light-gray);
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .bus-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .rating-value {
+            background-color: #4caf50;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .time-info {
+            text-align: center;
+        }
+
+        .departure-time, .arrival-time {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .journey-duration {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-top: 5px;
+        }
+
+        .price-info {
+            text-align: center;
+        }
+
+        .price {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .seats-left {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-top: 5px;
+        }
+
+        .view-seats-btn {
+            background-color: var(--secondary-color);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .view-seats-btn:hover {
+            background-color: #3468db;
+        }
+
+        /* No results state */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .no-results h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--light-gray);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Seat selection modal (hidden by default) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: 50px auto;
+            width: 90%;
+            max-width: 800px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .close-modal {
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--dark-gray);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <a href="/" class="logo">BusBooker</a>
+                <div class="nav-links">
+                    <a href="/home.html">Home</a>
+                    
+                    <a href="/bookings.html">My Bookings</a>
+                    <a href="/login.html" id="loginLink">Login</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="search-container">
+        <div class="container">
+            <form id="searchForm" class="search-form">
+                <div class="form-group">
+                    <label for="from">From</label>
+                    <input type="text" id="from" placeholder="Enter source city" required>
+                </div>
+                <div class="form-group">
+                    <label for="to">To</label>
+                    <input type="text" id="to" placeholder="Enter destination city" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date of Journey</label>
+                    <input type="date" id="date" required>
+                </div>
+                <button type="submit" class="search-btn">Search Buses</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="results-section container">
+        <div class="results-header">
+            <div class="results-count" id="resultsCount">0 buses found</div>
+            <div class="filter-options">
+                <button class="filter-btn active" data-filter="departure">Departure</button>
+                <button class="filter-btn" data-filter="duration">Duration</button>
+                <button class="filter-btn" data-filter="price">Price</button>
+                <button class="filter-btn" data-filter="rating">Rating</button>
+            </div>
+        </div>
+
+        <div id="busResultsContainer">
+            <!-- Loading state will show initially -->
+            <div class="loading" id="loadingState">
+                <div class="loader"></div>
+                <p>Finding the best buses for you...</p>
+            </div>
+
+            <!-- No results state (hidden initially) -->
+            <div class="no-results" id="noResultsState" style="display: none;">
+                <h2>No buses found</h2>
+                <p>Try changing your search criteria or date of travel</p>
+            </div>
+
+            <!-- Bus list (populated by JavaScript) -->
+            <div class="bus-list" id="busList" style="display: none;"></div>
+        </div>
+    </section>
+
+    <!-- Seat selection modal -->
+    <div class="modal" id="seatSelectionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select Seats</h2>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Seat selection content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromParam = urlParams.get('from');
+        const toParam = urlParams.get('to');
+        const dateParam = urlParams.get('date');
+
+        // Set form values from URL parameters if they exist
+        if (fromParam) document.getElementById('from').value = fromParam;
+        if (toParam) document.getElementById('to').value = toParam;
+        if (dateParam) document.getElementById('date').value = dateParam;
+
+        // Elements
+        const searchForm = document.getElementById('searchForm');
+        const loadingState = document.getElementById('loadingState');
+        const noResultsState = document.getElementById('noResultsState');
+        const busList = document.getElementById('busList');
+        const resultsCount = document.getElementById('resultsCount');
+        const modal = document.getElementById('seatSelectionModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalBody = document.getElementById('modalBody');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        // Sample bus data (in a real app, this would come from your API)
+        const sampleBuses = [
+            {
+                id: 1,
+                name: "Express Travels",
+                type: "A/C Sleeper",
+                rating: 4.5,
+                totalRatings: 320,
+                departure: "07:30",
+                arrival: "13:45",
+                duration: "6h 15m",
+                price: 850,
+                seatsAvailable: 12
+            },
+            {
+                id: 2,
+                name: "Royal Coaches",
+                type: "Non A/C Seater",
+                rating: 3.8,
+                totalRatings: 156,
+                departure: "09:00",
+                arrival: "14:30",
+                duration: "5h 30m",
+                price: 600,
+                seatsAvailable: 8
+            },
+            {
+                id: 3,
+                name: "City Express",
+                type: "A/C Semi-Sleeper",
+                rating: 4.2,
+                totalRatings: 278,
+                departure: "10:15",
+                arrival: "16:45",
+                duration: "6h 30m",
+                price: 750,
+                seatsAvailable: 15
+            },
+            {
+                id: 4,
+                name: "Golden Travels",
+                type: "A/C Volvo Multi-Axle",
+                rating: 4.7,
+                totalRatings: 412,
+                departure: "22:30",
+                arrival: "05:45",
+                duration: "7h 15m",
+                price: 1200,
+                seatsAvailable: 6
+            },
+            {
+                id: 5,
+                name: "Highway Riders",
+                type: "A/C Sleeper",
+                rating: 4.0,
+                totalRatings: 189,
+                departure: "23:00",
+                arrival: "06:30",
+                duration: "7h 30m",
+                price: 950,
+                seatsAvailable: 10
+            }
+        ];
+
+        // Check if we need to run a search on page load
+        if (fromParam && toParam && dateParam) {
+            searchBuses();
+        } else {
+            // If no search parameters, hide loading state
+            loadingState.style.display = 'none';
+        }
+
+        // Search form submission
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            searchBuses();
+        });
+
+        // Close modal
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Click outside modal to close
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Filter buttons
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Sort buses based on filter
+                const filter = this.getAttribute('data-filter');
+                sortBuses(filter);
+            });
+        });
+
+        // Search function
+        function searchBuses() {
+            // Show loading state
+            loadingState.style.display = 'block';
+            noResultsState.style.display = 'none';
+            busList.style.display = 'none';
+
+            // Get form values
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const date = document.getElementById('date').value;
+
+            // Update URL with search parameters without reloading
+            const url = new URL(window.location);
+            url.searchParams.set('from', from);
+            url.searchParams.set('to', to);
+            url.searchParams.set('date', date);
+            window.history.pushState({}, '', url);
+
+            // In a real app, you would fetch data from your API here
+            // For this example, we'll use setTimeout to simulate API call
+            setTimeout(() => {
+                // Hide loading state
+                loadingState.style.display = 'none';
+
+                // Check if we have results
+                if (sampleBuses.length > 0) {
+                    displayBuses(sampleBuses);
+                    resultsCount.textContent = `${sampleBuses.length} buses found`;
+                    busList.style.display = 'flex';
+                } else {
+                    noResultsState.style.display = 'block';
+                    resultsCount.textContent = '0 buses found';
+                }
+            }, 1500); // Simulate API delay
+        }
+
+        // Display buses function
+        function displayBuses(buses) {
+            busList.innerHTML = '';
+
+            buses.forEach(bus => {
+                const busCard = document.createElement('div');
+                busCard.className = 'bus-card';
+                busCard.innerHTML = `
+                    <div class="bus-info">
+                        <h3>${bus.name}</h3>
+                        <span class="bus-type">${bus.type}</span>
+                        <div class="bus-rating">
+                            <span class="rating-value">${bus.rating}</span>
+                            <span class="rating-count">${bus.totalRatings} ratings</span>
+                        </div>
+                    </div>
+                    <div class="time-info">
+                        <div class="departure-time">${bus.departure}</div>
+                        <div class="journey-duration">${bus.duration}</div>
+                        <div class="arrival-time">${bus.arrival}</div>
+                    </div>
+                    <div class="price-info">
+                        <div class="price">₹${bus.price}</div>
+                        <div class="seats-left">${bus.seatsAvailable} seats left</div>
+                    </div>
+                    <button  class="view-seats-btn" data-bus-id="${bus.id}">View Seats</button>
+                `;
+                busList.appendChild(busCard);
+            });
+
+            // Add event listeners to view seats buttons
+            document.querySelectorAll('.view-seats-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const busId = this.getAttribute('data-bus-id');
+        window.location.href = `bookings.html?busId=${busId}`;
+    });
+});
+
+        }
+
+        // Sort buses function
+        function sortBuses(filter) {
+            let sortedBuses = [...sampleBuses]; // Create a copy for sorting
+            
+            switch(filter) {
+                case 'departure':
+                    sortedBuses.sort((a, b) => {
+                        return a.departure.localeCompare(b.departure);
+                    });
+                    break;
+                case 'duration':
+                    sortedBuses.sort((a, b) => {
+                        const getDurationMinutes = (duration) => {
+                            const [hours, minutes] = duration.match(/(\d+)h\s+(\d+)m/).slice(1);
+                            return parseInt(hours) * 60 + parseInt(minutes);
+                        };
+                        return getDurationMinutes(a.duration) - getDurationMinutes(b.duration);
+                    });
+                    break;
+                case 'price':
+                    sortedBuses.sort((a, b) => a.price - b.price);
+                    break;
+                case 'rating':
+                    sortedBuses.sort((a, b) => b.rating - a.rating);
+                    break;
+            }
+            
+            // Redisplay sorted buses
+            displayBuses(sortedBuses);
+        }
+
+        // Open seat selection modal
+function openSeatSelection(busId) {
+    const selectedBus = sampleBuses.find(bus => bus.id == busId);
+    if (!selectedBus) return;
+
+    // Populate modal content
+    modalBody.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h3>${selectedBus.name}</h3>
+            <p>${selectedBus.type} | ${selectedBus.departure} - ${selectedBus.arrival}</p>
+        </div>
+
+        <div style="display: flex; margin-bottom: 20px;">
+            <div style="flex: 1; text-align: center;">
+                <div style="margin-bottom: 10px;">
+                    <span style="display: inline-block; width: 20px; height: 20px; background-color: #f5f5f5; border: 1px solid #ccc; margin-right: 5px;"></span>
+                    Available
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <span style="display: inline-block; width: 20px; height: 20px; background-color: #d84e55; margin-right: 5px;"></span>
+                    Booked
+                </div>
+                <div>
+                    <span style="display: inline-block; width: 20px; height: 20px; background-color: #4caf50; margin-right: 5px;"></span>
+                    Selected
+                </div>
+            </div>
+            <div style="flex: 1; text-align: center;">
+                <p>Price: ₹${selectedBus.price}</p>
+                <p>Selected: <span id="selectedSeatsCount">0</span></p>
+                <p>Total: ₹<span id="totalPrice">0</span></p>
+            </div>
+        </div>
+
+        <div style="display: flex; margin-bottom: 20px;">
+            <div style="flex: 0 0 100px; margin-right: 20px;">
+                ${generateSeatLayout(busId)}
+            </div>
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                <div style="padding: 10px 20px; background-color: #f5f5f5; border-radius: 4px; text-align: center;">
+                    <p>Driver</p>
+                    <div style="width: 40px; height: 60px; background-color: #888; margin: 10px auto; border-radius: 4px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: right; margin-top: 20px;">
+            <a id="continueBtn" 
+               href="bookings.html" 
+               style="background-color: var(--secondary-color); 
+                      color: white; 
+                      border: none; 
+                      padding: 10px 20px; 
+                      border-radius: 4px; 
+                      cursor: pointer; 
+                      font-weight: 600; 
+                      text-decoration: none; 
+                      display: inline-block;
+                      opacity: 0.5; 
+                      pointer-events: none;">
+                Continue
+            </a>
+        </div>
+    `;
+
+}          
+            // Show modal
+            modal.style.display = 'block';
+            
+            // Add event listeners to seats
+            document.querySelectorAll('.seat').forEach(seat => {
+                seat.addEventListener('click', function() {
+                    if (!this.classList.contains('booked')) {
+                        this.classList.toggle('selected');
+                        updateSeatSelection(selectedBus.price);
+                    }
+                });
+            });
+            
+            document.getElementById("continueBtn").addEventListener("click", function () {
+    window.location.href = "bookings.html";
+});
+
+
+
+        // Generate seat layout
+        function generateSeatLayout(busId) {
+            // In a real app, this would be dynamic based on bus type
+            let layout = '<div class="seat-layout" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">';
+            
+            // Generate random booked seats for demo
+            const bookedSeats = [];
+            for (let i = 0; i < 10; i++) {
+                bookedSeats.push(Math.floor(Math.random() * 30) + 1);
+            }
+            
+            for (let i = 1; i <= 30; i++) {
+                const isBooked = bookedSeats.includes(i);
+                layout += `
+                    <div class="seat ${isBooked ? 'booked' : ''}" 
+                         data-seat-id="${i}"
+                         style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; 
+                                background-color: ${isBooked ? '#d84e55' : '#f5f5f5'}; 
+                                border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">
+                        ${i}
+                    </div>
+                `;
+            }
+            
+            layout += '</div>';
+            return layout;
+        }
+
+        // Update seat selection
+        function updateSeatSelection(seatPrice) {
+            const selectedSeats = document.querySelectorAll('.seat.selected');
+            const selectedSeatsCount = document.getElementById('selectedSeatsCount');
+            const totalPrice = document.getElementById('totalPrice');
+            const continueBtn = document.getElementById('continueBtn');
+            
+            selectedSeatsCount.textContent = selectedSeats.length;
+            totalPrice.textContent = (selectedSeats.length * seatPrice).toLocaleString();
+            // Enable the continue button only if seats are selected
+            if (selectedSeats.length > 0) {
+              continueBtn.style.opacity = "1";
+              continueBtn.style.pointerEvents = "auto"; 
+            } else {
+             continueBtn.style.opacity = "0.5";
+             continueBtn.style.pointerEvents = "none";
+            }
+           
+        }
+
+        // Check login status and update UI
+        function checkLoginStatus() {
+            // In a real app, you would check for a token in localStorage
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                // User is logged in
+                document.getElementById('loginLink').textContent = 'Logout';
+                document.getElementById('loginLink').href = '#';
+                document.getElementById('loginLink').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Clear token and refresh
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('refreshToken');
+                    window.location.reload();
+                });
+            }
+        }
+        
+        // Call this on page load
+        checkLoginStatus();
+    </script>
+</body>
+</html>
